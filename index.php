@@ -4,7 +4,7 @@
 // split by row to split by column
 function read_data_coumn_by_column($data){
 	$columns = array();
-	$split_by_line = explode("\n", file_get_contents($data));
+	$split_by_line = explode("\n", file_get_contents("test2.txt"));
 	
 	for ($i = 0; $i < count($split_by_line); $i++){
 		$fromFile = explode(",",$split_by_line[$i]);
