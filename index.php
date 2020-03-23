@@ -1,101 +1,22 @@
 <?php 
 
-class Test
-{
-	public $r = array();
-	public $new_id = "";
-	public $last_elem = "";
-	public $tt = array();
-//echo body($columns);
-
-// Funkcja << Main >> odpowiadająca za prezentację wyniku programu
-function body ($columns) {	
-	$data = $this->cut_decision_column($columns);
-	
-	echo "<pre>";
-	$occurrence = $this->count_occurrence($data[0],$data[1]);
-	print_r($occurrence);
-	echo "</pre>";
-	
-	echo "<h3>Entropia rozkładu prawdopodobieństwa</h3>";
-	print_r($this->entropy($data[1]));
-	
-	echo "<h3>Informacja atrybutu</h3>";
-	echo "<pre>";
-	print_r($this->information_for_each_column($data[0],$occurrence));
-	echo "</pre>";
-	
-	echo "<h3>GAIN(X,T)</h3>";
-	echo "<pre>";
-	$gain = $this->gain($data[1],$data[0],$occurrence);
-	print_r($this->gain($data[1],$data[0],$occurrence));
-	echo "</pre>";
-	
-	echo "<h3>GAIN RATIOS</h3>";
-	echo "<pre>";
-	print_r($this->gainRatios($data[1],$data[0],$occurrence));
-	echo "</pre>";
-	
-	/*
-	echo "<pre>";
-	print_r(search_max_gain__create_collection($columns,$data[0],$data[1]));
-	echo "</pre>";
-	*/
-	
-	/*$occurrence = $this->count_occurrence($data[0],$data[1]);
-	$this->entropy($data[1]);
-	$this->information_for_each_column($data[0],$occurrence);
-	$this->gain($data[1],$data[0],$occurrence);
-	$this->gainRatios($data[1],$data[0],$occurrence);*/
-}
-/*
-function decision_tree($collection) {
-	$temp = array();
-	$keys = array_keys($collection);
-
-	for ($i = 0; $i < count($keys); $i++){
-		body($collection[$keys[$i]]);
-
-		$data = cut_decision_column($collection[$keys[$i]]);
-		$gain = gain($data[1],$data[0],count_occurrence($data[0],$data[1]));
-
-		if (count(array_unique($gain)) !== 1){
-			$single_collection = search_max_gain__create_collection($collection[$keys[$i]],$data[0],$data[1])[0];
-			array_push($temp,$single_collection);
-		}
-		else {
-			echo "<h4>Brak podziału. Gain = ".max($gain)."</h4>";
-		}
-	}
-	
-	if (!empty($temp)){
-		$collection = $temp;
-	
-		for ($j = 0; $j < count($collection); $j++) {
-			decision_tree($collection[$j]);
-		}	
-	}
-	
-}
-*/
-//wczytanie danych z pliku oraz zmiana strukrury wyjsciowej tablicy z split by row na  split by column
+// read data from a file and changing the output structure  
+// split by row to split by column
 function read_data_coumn_by_column($data){
 	$columns = array();
-	
 	$split_by_line = explode("\n", file_get_contents($data));
 	
 	for ($i = 0; $i < count($split_by_line); $i++){
 		$fromFile = explode(",",$split_by_line[$i]);
 		foreach ($fromFile as $key => $sign) {
 			$columns[$key][$i] = $sign;
-			//$rows[$i][$key] = $sign;
 		}
 	}
 	
 	return $columns;
 }
 
-//oddzielenie kolumny decyzyjnej
+//separation of decision columns
 function cut_decision_column($columns){
 	$columns_after_cut = array();
 	$last_column = array();
@@ -113,7 +34,7 @@ function cut_decision_column($columns){
 	return array($columns_after_cut,$last_column);
 }
 
-// Funkcja odpowiadająca za zliczenie wystapien w poszczegolnych kolumnach 
+// counting occurrences in individual columns 
 function count_occurrence($columns_after_cut,$last_column) {
 	$res_occurrence = array();
 	$counter = 0;
@@ -135,7 +56,7 @@ function count_occurrence($columns_after_cut,$last_column) {
 	return $res_occurrence;
 }
 
-// Funkcja odpowiadająca za wyliczenie entropii dla kolumny decyzyjnej
+// calculation of entropy for the decision column
 function entropy($column,$len=false){
 	$result = 0;
 
@@ -166,14 +87,14 @@ function entropy($column,$len=false){
 	return $result;
 }
 
-// Funkcja odpowiadająca za wyliczenia informacji atrybuty dla poszczegolnych kolumn
+// calculate information attributes for individual columns
 function information_for_each_column($col,$res){
 	$res_info = array();
 	for($i = 0; $i < count($col); $i++){
 		
-		//długość poszczególnej kolumny
+		//the length of each column
 		$len_each_column = count($col[$i]);
-		//zlicz poszczególne elementy
+		//calculate individual elements
 		$calc_current_elem = array_count_values($col[$i]);
 		$keys = array_keys($calc_current_elem);
 		$info = 0;
@@ -196,7 +117,7 @@ function information_for_each_column($col,$res){
 	return $res_info;
 }
 
-// Funkcja odpowiadająca za wyliczenia wartosci GAIN dla poszczegolnych kolumn
+// calculating the GAIN value for individual columns
 function gain($l_column,$other_column,$res){
 	$res_gain = array();
 
@@ -219,13 +140,7 @@ function search_max_gain__create_collection($columns,$columns_after_cut,$last_co
 	//$draw = "<h4>Dzielimy wg kolumny nr ".$id_max_column."&nbsp;|&nbsp;MAX GAIN to: ".max($gain);
 	$root = array_unique($columns_after_cut[$id_max_column]);
 	$keys = array_keys($root);
-	
-	//$this->r[] = $id_max_column;
-	//$this->r[] = $root;
-	//$this->r[] = max($gain);
-	
-	//$this->r[$id_max_column] = array_values($root);
-	
+		
 	for ($i = 0; $i < count($keys); $i++){
 		$index = $root[$keys[$i]];
 		$collection[$index] = array();
@@ -242,7 +157,7 @@ function search_max_gain__create_collection($columns,$columns_after_cut,$last_co
 	return array($collection,$id_max_column,$root);
 }
 
-// Funkcja odpowiadająca za wyliczenia wartosci GAIN RATIOS dla poszczegolnych kolumn
+// calculating GAIN RATIOS values for individual columns
 function gainRatios($last_column,$columns_after_cut,$res) {
 	$res_gainRatios = array();
 	
@@ -282,5 +197,5 @@ function splitInfo($queueColumns){
 function log2($x){
 	return (log10($x) / log10(2));
 }
-}
+
 ?>
