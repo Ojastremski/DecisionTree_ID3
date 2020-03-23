@@ -1,6 +1,6 @@
 <?php 
 
-require("index.php")
+require("index.php");
 
 $columns = read_data_coumn_by_column("test2.txt");
 
@@ -8,7 +8,7 @@ $data = cut_decision_column($columns);
 echo search_max_gain__create_collection($columns,$data[0],$data[1])[1];
 
 //first iteration
-echo body($columns)
+echo body($columns);
 			
 $collection = search_max_gain__create_collection($columns,$data[0],$data[1])[0];
 $counter = 0;
@@ -16,30 +16,30 @@ $counter = 0;
 echo decision_tree($collection,$counter);
 
 function body ($columns) {	
-	$data = $this->cut_decision_column($columns);
+	$data = cut_decision_column($columns);
 	
 	echo "<pre>";
-	$occurrence = $this->count_occurrence($data[0],$data[1]);
+	$occurrence = count_occurrence($data[0],$data[1]);
 	print_r($occurrence);
 	echo "</pre>";
 	
 	echo "<h3>Entropia rozkładu prawdopodobieństwa</h3>";
-	print_r($this->entropy($data[1]));
+	print_r(entropy($data[1]));
 	
 	echo "<h3>Informacja atrybutu</h3>";
 	echo "<pre>";
-	print_r($this->information_for_each_column($data[0],$occurrence));
+	print_r(information_for_each_column($data[0],$occurrence));
 	echo "</pre>";
 	
 	echo "<h3>GAIN(X,T)</h3>";
 	echo "<pre>";
-	$gain = $this->gain($data[1],$data[0],$occurrence);
-	print_r($this->gain($data[1],$data[0],$occurrence));
+	$gain = gain($data[1],$data[0],$occurrence);
+	print_r(gain($data[1],$data[0],$occurrence));
 	echo "</pre>";
 	
 	echo "<h3>GAIN RATIOS</h3>";
 	echo "<pre>";
-	print_r($this->gainRatios($data[1],$data[0],$occurrence));
+	print_r(gainRatios($data[1],$data[0],$occurrence));
 	echo "</pre>";
 }
 

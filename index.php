@@ -77,7 +77,7 @@ function entropy($column,$len=false){
 		else {
 			$current_p = $calc_each_elem[$keys[$i]] / $len_current_column;
 		}
-		$result += $current_p * $this->log2($current_p);
+		$result += $current_p * log2($current_p);
 			
 		if ($i == count($keys)-1){
 			$result *= -1;
@@ -109,7 +109,7 @@ function information_for_each_column($col,$res){
 				}
 			}
 			
-			$info += $calc_current_elem[$keys[$j]]/$len_each_column * $this->entropy($temp,$calc_current_elem[$keys[$j]]);
+			$info += $calc_current_elem[$keys[$j]]/$len_each_column * entropy($temp,$calc_current_elem[$keys[$j]]);
 		}
 		array_push($res_info,$info);
 	}
@@ -121,8 +121,8 @@ function information_for_each_column($col,$res){
 function gain($l_column,$other_column,$res){
 	$res_gain = array();
 
-	$information = $this->information_for_each_column($other_column,$res);
-	$entropy_lastColumn = $this->entropy($l_column);
+	$information = information_for_each_column($other_column,$res);
+	$entropy_lastColumn = entropy($l_column);
 	
 	for ($i = 0; $i < count($information); $i++){
 		$temp = $entropy_lastColumn - $information[$i];
@@ -134,7 +134,7 @@ function gain($l_column,$other_column,$res){
 
 function search_max_gain__create_collection($columns,$columns_after_cut,$last_column){
 	$collection = array();
-	$gain = $this->gain($last_column,$columns_after_cut,$this->count_occurrence($columns_after_cut,$last_column));
+	$gain = gain($last_column,$columns_after_cut,count_occurrence($columns_after_cut,$last_column));
 	
 	$id_max_column = array_search(max($gain),$gain);
 	//$draw = "<h4>Dzielimy wg kolumny nr ".$id_max_column."&nbsp;|&nbsp;MAX GAIN to: ".max($gain);
@@ -161,8 +161,8 @@ function search_max_gain__create_collection($columns,$columns_after_cut,$last_co
 function gainRatios($last_column,$columns_after_cut,$res) {
 	$res_gainRatios = array();
 	
-	$gain = $this->gain($last_column,$columns_after_cut,$res);
-	$splitInfo = $this->splitInfo($columns_after_cut);
+	$gain = gain($last_column,$columns_after_cut,$res);
+	$splitInfo = splitInfo($columns_after_cut);
 	
 	for ($i = 0; $i < count($gain); $i++){
 		if ($splitInfo[$i] != 0){
@@ -186,7 +186,7 @@ function splitInfo($queueColumns){
 		$keys = array_keys($calc_current_elem);
 		for ($j = 0; $j < count($keys); $j++){
 			$current_T = $calc_current_elem[$keys[$j]] / count($queueColumns[$i]);
-			$result += -1*$current_T * $this->log2($current_T);
+			$result += -1*$current_T * log2($current_T);
 		}
 		array_push($res_splitInfo, $result);
 		$result = 0;
